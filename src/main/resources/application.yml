@@ -1,14 +1,18 @@
+jwt:
+  secret: c8Dboxr7plcET25mrUsxO92IIet4bzpKN8lck51PimMA9Kiukq0Qau1rtA7txc18
+  expiration: 3600000
+
 server:
   port: 8090
 
 spring:
   datasource:
-    url: jdbc:postgresql://207.154.255.31:5432/cooks_corner
-    username: postgres
-    password: digitalocean
-#    url: jdbc:postgresql://localhost:5432/cooks_corner
+#    url: jdbc:postgresql://207.154.255.31:5432/cooks_corner
 #    username: postgres
-#    password: ronaldinho80
+#    password: digitalocean
+    url: jdbc:postgresql://localhost:5432/cooks_corner
+    username: postgres
+    password: ronaldinho80
     driver-class-name: org.postgresql.Driver
   jpa:
     hibernate:

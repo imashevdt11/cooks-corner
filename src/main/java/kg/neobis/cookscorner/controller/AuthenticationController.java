@@ -2,8 +2,11 @@ package kg.neobis.cookscorner.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import kg.neobis.cookscorner.common.EndpointConstants;
+import kg.neobis.cookscorner.dto.LogInRequest;
+import kg.neobis.cookscorner.dto.LogInResponse;
 import kg.neobis.cookscorner.dto.SignUpRequest;
 import kg.neobis.cookscorner.service.AuthenticationService;
 import lombok.AccessLevel;
@@ -27,6 +30,18 @@ import org.springframework.web.bind.annotation.RestController;
 public class AuthenticationController {
 
     AuthenticationService service;
+
+    @Operation(summary = "authentication")
+    @PostMapping("/logIn")
+    public ResponseEntity<LogInResponse> logIn(@RequestBody LogInRequest request) {
+        return ResponseEntity.ok(service.logIn(request));
+    }
+
+    @Operation(summary = "log out")
+    @PostMapping("/logOut")
+    public ResponseEntity<?> logOut(HttpServletRequest request) {
+        return ResponseEntity.ok(service.logOut(request));
+    }
 
     @Operation(summary = "registration")
     @PostMapping("/signUp")
