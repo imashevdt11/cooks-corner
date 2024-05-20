@@ -1,5 +1,6 @@
 package kg.neobis.cookscorner.service;
 
+import kg.neobis.cookscorner.dto.RecipeDetailPageDto;
 import kg.neobis.cookscorner.dto.RecipeDto;
 import kg.neobis.cookscorner.dto.RecipeMainPageDto;
 import kg.neobis.cookscorner.entity.Ingredient;
@@ -16,4 +17,6 @@ public interface RecipeService {
                            String preparation_time, Long userId, List<Ingredient> ingredients) throws IOException;
 
     List<RecipeMainPageDto> getRecipesByCategory(Category category, Long currentUserId);
+
+    RecipeDetailPageDto getRecipeDetails(Long recipeId, Long currentUserId);
 }
