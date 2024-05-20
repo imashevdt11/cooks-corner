@@ -44,7 +44,7 @@ CREATE TABLE ingredients
     recipe_id BIGINT REFERENCES recipes (id) NOT NULL,
     name      VARCHAR(100)                   NOT NULL,
     amount    VARCHAR(100)                   NOT NULL,
-    unit      VARCHAR(50) CHECK (unit IN ('SPOON', 'KG', 'GR'))
+    unit      VARCHAR(50) CHECK (unit IN ('SPOON', 'KG', 'GR', 'GRAND'))
 );
 
 CREATE SEQUENCE following_id_seq;

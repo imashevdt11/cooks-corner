@@ -13,11 +13,10 @@ import lombok.experimental.FieldDefaults;
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class RecipeMainPageDto {
-    Long id;
-    String name;
-    Long imageId;
+    Long recipeId;
+    String recipeName;
     String imageUrl;
-    String userName;
+    String authorName;
     Long likeCount;
     Long saveCount;
     Boolean isLikedByCurrentUser;
