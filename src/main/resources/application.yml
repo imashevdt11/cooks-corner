@@ -1,3 +1,8 @@
+cloudinary:
+  cloud-name: dn0akydmv
+  api-key: 883779744122919
+  api-secret: 2q8MUhDG4sUjtN47HZS823Zxjko
+
 jwt:
   secret: c8Dboxr7plcET25mrUsxO92IIet4bzpKN8lck51PimMA9Kiukq0Qau1rtA7txc18
   expiration: 3600000
