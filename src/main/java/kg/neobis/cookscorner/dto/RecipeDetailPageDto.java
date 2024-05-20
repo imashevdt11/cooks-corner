@@ -16,14 +16,14 @@ import java.util.List;
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class RecipeDetailPageDto {
-    Long id;
-    String name;
+    Long recipeId;
+    String recipeName;
     String preparationTime;
     Difficulty difficulty;
-    Long userId;
     String description;
     String imageUrl;
-    String username;
+    Long authorId;
+    String authorName;
     List<IngredientDto> ingredients;
     Long likeCount;
     Boolean isLikedByCurrentUser;

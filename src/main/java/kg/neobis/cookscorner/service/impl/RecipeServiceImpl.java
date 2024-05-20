@@ -94,10 +94,10 @@ public class RecipeServiceImpl implements RecipeService {
 
         for (Recipe recipe : recipes) {
             RecipeMainPageDto dto = new RecipeMainPageDto();
-            dto.setId(recipe.getId());
-            dto.setName(recipe.getName());
+            dto.setRecipeId(recipe.getId());
+            dto.setRecipeName(recipe.getName());
             dto.setImageUrl(recipe.getImage().getUrl());
-            dto.setUserName(recipe.getUser().getUsername());
+            dto.setAuthorName(recipe.getUser().getUsername());
             dto.setLikeCount(likedRecipeRepository.countByRecipe(recipe));
             dto.setSaveCount(savedRecipeRepository.countByRecipe(recipe));
             dto.setIsLikedByCurrentUser(likedRecipeRepository.findByUserAndRecipe(user, recipe).isPresent());
@@ -118,14 +118,14 @@ public class RecipeServiceImpl implements RecipeService {
                 .orElseThrow(() -> new ResourceNotFoundException("Recipe not found with id: " + recipeId, HttpStatus.NOT_FOUND.value()));
 
         RecipeDetailPageDto recipeDto = new RecipeDetailPageDto();
-        recipeDto.setId(recipe.getId());
-        recipeDto.setName(recipe.getName());
+        recipeDto.setRecipeId(recipe.getId());
+        recipeDto.setRecipeName(recipe.getName());
         recipeDto.setPreparationTime(recipe.getPreparation_time());
         recipeDto.setDifficulty(recipe.getDifficulty());
-        recipeDto.setUserId(recipe.getUser().getId());
+        recipeDto.setAuthorId(recipe.getUser().getId());
+        recipeDto.setAuthorName(recipe.getUser().getUsername());
         recipeDto.setDescription(recipe.getDescription());
         recipeDto.setImageUrl(recipe.getImage().getUrl());
-        recipeDto.setUsername(recipe.getUser().getUsername());
         recipeDto.setLikeCount(likedRecipeRepository.countByRecipe(recipe));
         recipeDto.setIsLikedByCurrentUser(likedRecipeRepository.findByUserAndRecipe(user, recipe).isPresent());
         recipeDto.setIsSavedByCurrentUser(savedRecipeRepository.findByUserAndRecipe(user, recipe).isPresent());
