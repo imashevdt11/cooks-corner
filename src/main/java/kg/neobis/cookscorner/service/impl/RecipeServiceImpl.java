@@ -1,9 +1,6 @@
 package kg.neobis.cookscorner.service.impl;
 
-import kg.neobis.cookscorner.dto.IngredientDto;
-import kg.neobis.cookscorner.dto.RecipeDetailPageDto;
-import kg.neobis.cookscorner.dto.RecipeDto;
-import kg.neobis.cookscorner.dto.RecipeMainPageDto;
+import kg.neobis.cookscorner.dto.*;
 import kg.neobis.cookscorner.entity.Image;
 import kg.neobis.cookscorner.entity.Ingredient;
 import kg.neobis.cookscorner.entity.Recipe;
@@ -82,7 +79,7 @@ public class RecipeServiceImpl implements RecipeService {
 
         Recipe savedRecipe = recipeRepository.save(recipe);
 
-        return RecipeMapper.toDto(savedRecipe);
+        return RecipeMapper.toRecipeDto(savedRecipe);
     }
 
 
@@ -145,5 +142,14 @@ public class RecipeServiceImpl implements RecipeService {
         recipeDto.setIngredients(ingredients);
 
         return recipeDto;
+    }
+
+    public List<RecipeSearchPageDto> searchRecipesByName(String name) {
+        List<Recipe> recipes = recipeRepository.findByNameStartingWithIgnoreCase(name);
+
+        if (recipes.isEmpty())
+            throw new ResourceNotFoundException("No recipes found with name '" + name + "'", HttpStatus.NOT_FOUND.value());
+
+        return recipes.stream().map(RecipeMapper::toRecipeSearchPageDto).toList();
     }
 }

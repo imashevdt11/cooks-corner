@@ -8,6 +8,7 @@ import kg.neobis.cookscorner.common.EndpointConstants;
 import kg.neobis.cookscorner.dto.RecipeDetailPageDto;
 import kg.neobis.cookscorner.dto.RecipeDto;
 import kg.neobis.cookscorner.dto.RecipeMainPageDto;
+import kg.neobis.cookscorner.dto.RecipeSearchPageDto;
 import kg.neobis.cookscorner.entity.Ingredient;
 import kg.neobis.cookscorner.enums.Category;
 import kg.neobis.cookscorner.enums.Difficulty;
@@ -65,5 +66,12 @@ public class RecipeController {
     public ResponseEntity<RecipeDetailPageDto> getRecipeDetails(@PathVariable Long recipeId, @RequestParam Long currentUserId) {
         RecipeDetailPageDto recipeDetails = service.getRecipeDetails(recipeId, currentUserId);
         return ResponseEntity.ok(recipeDetails);
+    }
+
+    @Operation(summary = "search recipes by name")
+    @GetMapping("/search")
+    public ResponseEntity<List<RecipeSearchPageDto>> searchRecipes(@RequestParam("name") String name) {
+        List<RecipeSearchPageDto> recipes = service.searchRecipesByName(name);
+        return ResponseEntity.ok(recipes);
     }
 }
