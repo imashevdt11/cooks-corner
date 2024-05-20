@@ -1,7 +1,11 @@
 package kg.neobis.cookscorner.dto;
 
 import kg.neobis.cookscorner.enums.Unit;
-import lombok.*;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
 
 @Data

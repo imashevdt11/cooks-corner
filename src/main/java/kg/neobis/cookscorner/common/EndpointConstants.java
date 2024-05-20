@@ -6,7 +6,11 @@ public final class EndpointConstants {
 
     public static final String AUTH_ENDPOINT = API_PREFIX + "/auth";
 
+    public static final String LIKE_RECIPE_ENDPOINT = API_PREFIX + "/like-recipe";
+
     public static final String RECIPE_ENDPOINT = API_PREFIX + "/recipe";
+
+    public static final String SAVE_RECIPE_ENDPOINT = API_PREFIX + "/save-recipe";
 
     public static final String[] WHITE_LIST_URL = {
             AUTH_ENDPOINT + "/signUp",
