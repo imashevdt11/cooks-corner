@@ -6,6 +6,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import kg.neobis.cookscorner.common.EndpointConstants;
 import kg.neobis.cookscorner.dto.RecipeDto;
+import kg.neobis.cookscorner.dto.RecipeMainPageDto;
 import kg.neobis.cookscorner.entity.Ingredient;
 import kg.neobis.cookscorner.enums.Category;
 import kg.neobis.cookscorner.enums.Difficulty;
@@ -50,5 +51,12 @@ public class RecipeController {
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to create recipe: " + e.getMessage());
         }
+    }
+
+    @Operation(description = "get recipes with specified category")
+    @GetMapping("/category/{category}")
+    public ResponseEntity<List<RecipeMainPageDto>> getRecipesByCategory(@PathVariable Category category, @RequestParam Long currentUserId) {
+        List<RecipeMainPageDto> recipes = service.getRecipesByCategory(category, currentUserId);
+        return ResponseEntity.ok(recipes);
     }
 }

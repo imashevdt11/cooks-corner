@@ -1,6 +1,7 @@
 package kg.neobis.cookscorner.service.impl;
 
 import kg.neobis.cookscorner.dto.RecipeDto;
+import kg.neobis.cookscorner.dto.RecipeMainPageDto;
 import kg.neobis.cookscorner.entity.Image;
 import kg.neobis.cookscorner.entity.Ingredient;
 import kg.neobis.cookscorner.entity.Recipe;
@@ -22,6 +23,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -33,6 +35,8 @@ public class RecipeServiceImpl implements RecipeService {
 
     CloudinaryService cloudinaryService;
     ImageRepository imageRepository;
+    LikedRecipeRepository likedRecipeRepository;
+    SavedRecipeRepository savedRecipeRepository;
     RecipeRepository recipeRepository;
     UserRepository userRepository;
 
@@ -75,5 +79,33 @@ public class RecipeServiceImpl implements RecipeService {
         Recipe savedRecipe = recipeRepository.save(recipe);
 
         return RecipeMapper.toDto(savedRecipe);
+    }
+
+
+    @Override
+    public List<RecipeMainPageDto> getRecipesByCategory(Category category, Long currentUserId) {
+
+        List<Recipe> recipes = recipeRepository.findByCategory(category);
+        List<RecipeMainPageDto> recipeList = new ArrayList<>();
+
+        User user = userRepository.findById(currentUserId)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + currentUserId, HttpStatus.NOT_FOUND.value()));
+
+        for (Recipe recipe : recipes) {
+            RecipeMainPageDto dto = new RecipeMainPageDto();
+            dto.setId(recipe.getId());
+            dto.setName(recipe.getName());
+            dto.setImageUrl(recipe.getImage().getUrl());
+            dto.setUserName(recipe.getUser().getUsername());
+            dto.setLikeCount(likedRecipeRepository.countByRecipe(recipe));
+            dto.setSaveCount(savedRecipeRepository.countByRecipe(recipe));
+            dto.setIsLikedByCurrentUser(likedRecipeRepository.findByUserAndRecipe(user, recipe).isPresent());
+            dto.setIsSavedByCurrentUser(savedRecipeRepository.findByUserAndRecipe(user, recipe).isPresent());
+            recipeList.add(dto);
+        }
+        if (recipeList.isEmpty()) {
+            throw new ResourceNotFoundException("Recipes with category '" + category + "' not found", HttpStatus.NOT_FOUND.value());
+        }
+        return recipeList;
     }
 }
