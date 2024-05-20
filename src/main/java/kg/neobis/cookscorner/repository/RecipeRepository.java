@@ -13,4 +13,6 @@ public interface RecipeRepository extends JpaRepository<Recipe, Long> {
     Boolean existsRecipeByName(String name);
 
     List<Recipe> findByCategory(Category category);
+
+    List<Recipe> findByNameStartingWithIgnoreCase(String name);
 }

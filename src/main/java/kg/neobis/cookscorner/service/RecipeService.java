@@ -3,6 +3,7 @@ package kg.neobis.cookscorner.service;
 import kg.neobis.cookscorner.dto.RecipeDetailPageDto;
 import kg.neobis.cookscorner.dto.RecipeDto;
 import kg.neobis.cookscorner.dto.RecipeMainPageDto;
+import kg.neobis.cookscorner.dto.RecipeSearchPageDto;
 import kg.neobis.cookscorner.entity.Ingredient;
 import kg.neobis.cookscorner.enums.Category;
 import kg.neobis.cookscorner.enums.Difficulty;
@@ -19,4 +20,6 @@ public interface RecipeService {
     List<RecipeMainPageDto> getRecipesByCategory(Category category, Long currentUserId);
 
     RecipeDetailPageDto getRecipeDetails(Long recipeId, Long currentUserId);
+
+    List<RecipeSearchPageDto> searchRecipesByName(String name);
 }
