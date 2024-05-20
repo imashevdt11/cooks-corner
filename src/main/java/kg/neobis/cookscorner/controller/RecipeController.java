@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import kg.neobis.cookscorner.common.EndpointConstants;
+import kg.neobis.cookscorner.dto.RecipeDetailPageDto;
 import kg.neobis.cookscorner.dto.RecipeDto;
 import kg.neobis.cookscorner.dto.RecipeMainPageDto;
 import kg.neobis.cookscorner.entity.Ingredient;
@@ -58,5 +59,11 @@ public class RecipeController {
     public ResponseEntity<List<RecipeMainPageDto>> getRecipesByCategory(@PathVariable Category category, @RequestParam Long currentUserId) {
         List<RecipeMainPageDto> recipes = service.getRecipesByCategory(category, currentUserId);
         return ResponseEntity.ok(recipes);
+    }
+
+    @GetMapping("/details/{recipeId}")
+    public ResponseEntity<RecipeDetailPageDto> getRecipeDetails(@PathVariable Long recipeId, @RequestParam Long currentUserId) {
+        RecipeDetailPageDto recipeDetails = service.getRecipeDetails(recipeId, currentUserId);
+        return ResponseEntity.ok(recipeDetails);
     }
 }

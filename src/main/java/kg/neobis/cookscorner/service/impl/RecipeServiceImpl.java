@@ -1,5 +1,7 @@
 package kg.neobis.cookscorner.service.impl;
 
+import kg.neobis.cookscorner.dto.IngredientDto;
+import kg.neobis.cookscorner.dto.RecipeDetailPageDto;
 import kg.neobis.cookscorner.dto.RecipeDto;
 import kg.neobis.cookscorner.dto.RecipeMainPageDto;
 import kg.neobis.cookscorner.entity.Image;
@@ -26,6 +28,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -35,6 +38,7 @@ public class RecipeServiceImpl implements RecipeService {
 
     CloudinaryService cloudinaryService;
     ImageRepository imageRepository;
+    IngredientRepository ingredientRepository;
     LikedRecipeRepository likedRecipeRepository;
     SavedRecipeRepository savedRecipeRepository;
     RecipeRepository recipeRepository;
@@ -107,5 +111,39 @@ public class RecipeServiceImpl implements RecipeService {
             throw new ResourceNotFoundException("Recipes with category '" + category + "' not found", HttpStatus.NOT_FOUND.value());
         }
         return recipeList;
+    }
+
+    public RecipeDetailPageDto getRecipeDetails(Long recipeId, Long currentUserId) {
+
+        User user = userRepository.findById(currentUserId)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + currentUserId, HttpStatus.NOT_FOUND.value()));
+        Recipe recipe = recipeRepository.findById(recipeId)
+                .orElseThrow(() -> new ResourceNotFoundException("Recipe not found with id: " + recipeId, HttpStatus.NOT_FOUND.value()));
+
+        RecipeDetailPageDto recipeDto = new RecipeDetailPageDto();
+        recipeDto.setId(recipe.getId());
+        recipeDto.setName(recipe.getName());
+        recipeDto.setPreparationTime(recipe.getPreparation_time());
+        recipeDto.setDifficulty(recipe.getDifficulty());
+        recipeDto.setUserId(recipe.getUser().getId());
+        recipeDto.setDescription(recipe.getDescription());
+        recipeDto.setImageUrl(recipe.getImage().getUrl());
+        recipeDto.setUsername(recipe.getUser().getUsername());
+        recipeDto.setLikeCount(likedRecipeRepository.countByRecipe(recipe));
+        recipeDto.setIsLikedByCurrentUser(likedRecipeRepository.findByUserAndRecipe(user, recipe).isPresent());
+        recipeDto.setIsSavedByCurrentUser(savedRecipeRepository.findByUserAndRecipe(user, recipe).isPresent());
+
+        List<IngredientDto> ingredients = ingredientRepository.findByRecipe(recipe).stream()
+                .map(ingredient -> {
+                    IngredientDto ingredientDTO = new IngredientDto();
+                    ingredientDTO.setName(ingredient.getName());
+                    ingredientDTO.setAmount(ingredient.getAmount());
+                    ingredientDTO.setUnit(ingredient.getUnit());
+                    return ingredientDTO;
+                }).collect(Collectors.toList());
+
+        recipeDto.setIngredients(ingredients);
+
+        return recipeDto;
     }
 }
