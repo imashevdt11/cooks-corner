@@ -17,13 +17,13 @@ public interface RecipeService {
     RecipeDto createRecipe(MultipartFile file, String name, String description, Difficulty difficulty, Category category,
                            String preparation_time, String username, List<Ingredient> ingredients) throws IOException;
 
-    List<PageRecipeDto> getRecipesByCategory(Category category, Long currentUserId);
+    RecipeDetailPageDto getRecipeDetails(String recipeName, String username);
 
-    RecipeDetailPageDto getRecipeDetails(Long recipeId, Long currentUserId);
+    List<PageRecipeDto> getRecipesByCategory(Category category, String username);
 
-    List<PageRecipeDto> getUserRecipes(Long userId);
+    List<PageRecipeDto> getUserRecipes(String username);
 
-    List<PageRecipeDto> getSavedRecipes(Long userId);
+    List<PageRecipeDto> getSavedRecipes(String username);
 
     List<RecipeSearchPageDto> searchRecipesByName(String name);
 
@@ -33,6 +33,7 @@ public interface RecipeService {
     void likeRecipe(String username, String recipeName);
 
     boolean isRecipeLikedByUser(String username, String recipeName);
+
 
     // SAVE
 

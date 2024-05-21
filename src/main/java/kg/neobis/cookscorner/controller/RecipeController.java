@@ -2,7 +2,6 @@ package kg.neobis.cookscorner.controller;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import kg.neobis.cookscorner.common.EndpointConstants;
 import kg.neobis.cookscorner.dto.RecipeDetailPageDto;
@@ -21,7 +20,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -60,46 +58,42 @@ public class RecipeController {
         }
     }
 
-    @Operation(description = "get recipes with specified category")
-    @GetMapping("/category/{category}")
-    public ResponseEntity<List<PageRecipeDto>> getRecipesByCategory(@PathVariable Category category, @RequestParam Long currentUserId) {
-        List<PageRecipeDto> recipes = service.getRecipesByCategory(category, currentUserId);
+    @GetMapping("/category")
+    public ResponseEntity<List<PageRecipeDto>> getRecipesByCategory(@RequestParam Category category, @RequestParam String authenticatedUsername) {
+        List<PageRecipeDto> recipes = service.getRecipesByCategory(category, authenticatedUsername);
         return ResponseEntity.ok(recipes);
     }
 
     @GetMapping("/details")
-    public ResponseEntity<RecipeDetailPageDto> getRecipeDetails(@RequestParam Long recipeId, @RequestParam Long currentUserId) {
-        RecipeDetailPageDto recipeDetails = service.getRecipeDetails(recipeId, currentUserId);
+    public ResponseEntity<RecipeDetailPageDto> getRecipeDetails(@RequestParam String recipeName, @RequestParam String authenticatedUsername) {
+        RecipeDetailPageDto recipeDetails = service.getRecipeDetails(recipeName, authenticatedUsername);
         return ResponseEntity.ok(recipeDetails);
     }
 
-    @Operation(summary = "getting recipes created by user")
     @GetMapping("/user-recipes")
-    public ResponseEntity<?> getUserRecipes(@RequestParam Long userId) {
-        List<PageRecipeDto> recipes = service.getUserRecipes(userId);
+    public ResponseEntity<?> getUserRecipes(@RequestParam String username) {
+        List<PageRecipeDto> recipes = service.getUserRecipes(username);
         return ResponseEntity.ok(recipes);
     }
 
-    @Operation(summary = "getting recipes saved by user")
     @GetMapping("/user-saved-recipes")
-    public ResponseEntity<?> getUserSavedRecipes(@RequestParam Long userId) {
-        List<PageRecipeDto> recipes = service.getSavedRecipes(userId);
+    public ResponseEntity<?> getUserSavedRecipes(@RequestParam String authenticatedUsername) {
+        List<PageRecipeDto> recipes = service.getSavedRecipes(authenticatedUsername);
         return ResponseEntity.ok(recipes);
     }
 
-    @Operation(summary = "search recipes by name")
     @GetMapping("/search")
-    public ResponseEntity<List<RecipeSearchPageDto>> searchRecipes(@RequestParam("name") String name) {
-        List<RecipeSearchPageDto> recipes = service.searchRecipesByName(name);
+    public ResponseEntity<List<RecipeSearchPageDto>> searchRecipes(@RequestParam String recipeName) {
+        List<RecipeSearchPageDto> recipes = service.searchRecipesByName(recipeName);
         return ResponseEntity.ok(recipes);
     }
 
     // LIKE
 
     @PostMapping("/like")
-    public ResponseEntity<?> likeRecipe(@RequestParam String username, @RequestParam String recipeName) {
+    public ResponseEntity<?> likeRecipe(@RequestParam String authenticatedUsername, @RequestParam String recipeName) {
         try {
-            service.likeRecipe(username, recipeName);
+            service.likeRecipe(authenticatedUsername, recipeName);
             return ResponseEntity.ok("Recipe liked/unliked successfully");
         } catch (ResourceNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
@@ -109,17 +103,17 @@ public class RecipeController {
     }
 
     @GetMapping("/like/status")
-    public ResponseEntity<Boolean> isRecipeLikedByUser(@RequestParam String username, @RequestParam String recipeName) {
-        Boolean isLiked = service.isRecipeLikedByUser(username, recipeName);
+    public ResponseEntity<Boolean> isRecipeLikedByUser(@RequestParam String authenticatedUsername, @RequestParam String recipeName) {
+        Boolean isLiked = service.isRecipeLikedByUser(authenticatedUsername, recipeName);
         return ResponseEntity.ok(isLiked);
     }
 
     // SAVE
 
     @PostMapping("/save")
-    public ResponseEntity<?> saveRecipe(@RequestParam String username, @RequestParam String recipeName) {
+    public ResponseEntity<?> saveRecipe(@RequestParam String authenticatedUsername, @RequestParam String recipeName) {
         try {
-            service.saveRecipe(username, recipeName);
+            service.saveRecipe(authenticatedUsername, recipeName);
             return ResponseEntity.ok("Recipe saved/unsaved successfully");
         } catch (ResourceNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
@@ -129,8 +123,8 @@ public class RecipeController {
     }
 
     @GetMapping("/save/status")
-    public ResponseEntity<Boolean> isRecipeSavedByUser(@RequestParam String username, @RequestParam String recipeName) {
-        Boolean isSaved = service.isRecipeSavedByUser(username, recipeName);
+    public ResponseEntity<Boolean> isRecipeSavedByUser(@RequestParam String authenticatedUsername, @RequestParam String recipeName) {
+        Boolean isSaved = service.isRecipeSavedByUser(authenticatedUsername, recipeName);
         return ResponseEntity.ok(isSaved);
     }
 }
