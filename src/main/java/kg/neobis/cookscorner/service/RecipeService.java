@@ -26,4 +26,17 @@ public interface RecipeService {
     List<PageRecipeDto> getSavedRecipes(Long userId);
 
     List<RecipeSearchPageDto> searchRecipesByName(String name);
+
+
+    // LIKE
+
+    void likeRecipe(String username, String recipeName);
+
+    boolean isRecipeLikedByUser(String username, String recipeName);
+
+    // SAVE
+
+    void saveRecipe(String username, String recipeName);
+
+    boolean isRecipeSavedByUser(String username, String recipeName);
 }

@@ -12,6 +12,7 @@ import kg.neobis.cookscorner.dto.RecipeSearchPageDto;
 import kg.neobis.cookscorner.entity.Ingredient;
 import kg.neobis.cookscorner.enums.Category;
 import kg.neobis.cookscorner.enums.Difficulty;
+import kg.neobis.cookscorner.exception.ResourceNotFoundException;
 import kg.neobis.cookscorner.service.RecipeService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -92,5 +93,45 @@ public class RecipeController {
     public ResponseEntity<List<RecipeSearchPageDto>> searchRecipes(@RequestParam("name") String name) {
         List<RecipeSearchPageDto> recipes = service.searchRecipesByName(name);
         return ResponseEntity.ok(recipes);
+    }
+
+    // LIKE
+
+    @PostMapping("/like")
+    public ResponseEntity<?> likeRecipe(@RequestParam String username, @RequestParam String recipeName) {
+        try {
+            service.likeRecipe(username, recipeName);
+            return ResponseEntity.ok("Recipe liked/unliked successfully");
+        } catch (ResourceNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to like/unlike recipe: " + e.getMessage());
+        }
+    }
+
+    @GetMapping("/like/status")
+    public ResponseEntity<Boolean> isRecipeLikedByUser(@RequestParam String username, @RequestParam String recipeName) {
+        Boolean isLiked = service.isRecipeLikedByUser(username, recipeName);
+        return ResponseEntity.ok(isLiked);
+    }
+
+    // SAVE
+
+    @PostMapping("/save")
+    public ResponseEntity<?> saveRecipe(@RequestParam String username, @RequestParam String recipeName) {
+        try {
+            service.saveRecipe(username, recipeName);
+            return ResponseEntity.ok("Recipe saved/unsaved successfully");
+        } catch (ResourceNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to save/unsave recipe: " + e.getMessage());
+        }
+    }
+
+    @GetMapping("/save/status")
+    public ResponseEntity<Boolean> isRecipeSavedByUser(@RequestParam String username, @RequestParam String recipeName) {
+        Boolean isSaved = service.isRecipeSavedByUser(username, recipeName);
+        return ResponseEntity.ok(isSaved);
     }
 }
