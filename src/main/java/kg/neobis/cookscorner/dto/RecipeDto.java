@@ -2,9 +2,6 @@ package kg.neobis.cookscorner.dto;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
-import kg.neobis.cookscorner.entity.Image;
-import kg.neobis.cookscorner.entity.Ingredient;
-import kg.neobis.cookscorner.entity.User;
 import kg.neobis.cookscorner.enums.Category;
 import kg.neobis.cookscorner.enums.Difficulty;
 import lombok.AccessLevel;
@@ -25,8 +22,7 @@ public class RecipeDto {
 
     Long id;
 
-    Image image;
-
+    String imageUrl;
     @NotBlank(message = "Name is required")
     @Size(min = 3, max = 100)
     String name;
@@ -41,7 +37,7 @@ public class RecipeDto {
     @NotBlank(message = "Preparation time is required")
     String preparation_time;
 
-    User user;
+    String username;
 
-    List<Ingredient> ingredients;
+    List<IngredientDto> ingredients;
 }
