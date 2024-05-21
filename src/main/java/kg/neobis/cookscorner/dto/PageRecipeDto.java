@@ -12,7 +12,7 @@ import lombok.experimental.FieldDefaults;
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class RecipeMainPageDto {
+public class PageRecipeDto {
     Long recipeId;
     String recipeName;
     String imageUrl;

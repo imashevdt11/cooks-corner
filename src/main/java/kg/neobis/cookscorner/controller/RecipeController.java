@@ -7,7 +7,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import kg.neobis.cookscorner.common.EndpointConstants;
 import kg.neobis.cookscorner.dto.RecipeDetailPageDto;
 import kg.neobis.cookscorner.dto.RecipeDto;
-import kg.neobis.cookscorner.dto.RecipeMainPageDto;
+import kg.neobis.cookscorner.dto.PageRecipeDto;
 import kg.neobis.cookscorner.dto.RecipeSearchPageDto;
 import kg.neobis.cookscorner.entity.Ingredient;
 import kg.neobis.cookscorner.enums.Category;
@@ -62,8 +62,8 @@ public class RecipeController {
 
     @Operation(description = "get recipes with specified category")
     @GetMapping("/category/{category}")
-    public ResponseEntity<List<RecipeMainPageDto>> getRecipesByCategory(@PathVariable Category category, @RequestParam Long currentUserId) {
-        List<RecipeMainPageDto> recipes = service.getRecipesByCategory(category, currentUserId);
+    public ResponseEntity<List<PageRecipeDto>> getRecipesByCategory(@PathVariable Category category, @RequestParam Long currentUserId) {
+        List<PageRecipeDto> recipes = service.getRecipesByCategory(category, currentUserId);
         return ResponseEntity.ok(recipes);
     }
 
@@ -71,6 +71,13 @@ public class RecipeController {
     public ResponseEntity<RecipeDetailPageDto> getRecipeDetails(@RequestParam Long recipeId, @RequestParam Long currentUserId) {
         RecipeDetailPageDto recipeDetails = service.getRecipeDetails(recipeId, currentUserId);
         return ResponseEntity.ok(recipeDetails);
+    }
+
+    @Operation(summary = "getting recipes created by user")
+    @GetMapping("/user-recipes")
+    public ResponseEntity<?> getUserRecipes(@RequestParam Long userId) {
+        List<PageRecipeDto> recipes = service.getUserRecipes(userId);
+        return ResponseEntity.ok(recipes);
     }
 
     @Operation(summary = "search recipes by name")

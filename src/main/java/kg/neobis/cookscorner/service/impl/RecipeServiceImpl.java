@@ -68,7 +68,6 @@ public class RecipeServiceImpl implements RecipeService {
         Image image;
         if (!file.isEmpty()) {
             String url = cloudinaryService.uploadFile(file, "images");
-
             String fileName = UUID.randomUUID() + "_" + file.getOriginalFilename();
             image = new Image();
             image.setName(fileName);
@@ -76,44 +75,27 @@ public class RecipeServiceImpl implements RecipeService {
             imageRepository.save(image);
             recipe.setImage(image);
         }
-
         Recipe savedRecipe = recipeRepository.save(recipe);
 
         return RecipeMapper.toRecipeDto(savedRecipe);
     }
 
-
     @Override
-    public List<RecipeMainPageDto> getRecipesByCategory(Category category, Long currentUserId) {
-
+    public List<PageRecipeDto> getRecipesByCategory(Category category, Long currentUserId) {
         List<Recipe> recipes = recipeRepository.findByCategory(category);
-        List<RecipeMainPageDto> recipeList = new ArrayList<>();
+        List<PageRecipeDto> recipeList = toListPageRecipeDto(recipes, currentUserId);
 
-        User user = userRepository.findById(currentUserId)
-                .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + currentUserId, HttpStatus.NOT_FOUND.value()));
-
-        for (Recipe recipe : recipes) {
-            RecipeMainPageDto dto = new RecipeMainPageDto();
-            dto.setRecipeId(recipe.getId());
-            dto.setRecipeName(recipe.getName());
-            dto.setImageUrl(recipe.getImage().getUrl());
-            dto.setAuthorName(recipe.getUser().getUsername());
-            dto.setLikeCount(likedRecipeRepository.countByRecipe(recipe));
-            dto.setSaveCount(savedRecipeRepository.countByRecipe(recipe));
-            dto.setIsLikedByCurrentUser(likedRecipeRepository.findByUserAndRecipe(user, recipe).isPresent());
-            dto.setIsSavedByCurrentUser(savedRecipeRepository.findByUserAndRecipe(user, recipe).isPresent());
-            recipeList.add(dto);
-        }
         if (recipeList.isEmpty()) {
             throw new ResourceNotFoundException("Recipes with category '" + category + "' not found", HttpStatus.NOT_FOUND.value());
         }
         return recipeList;
     }
 
-    public RecipeDetailPageDto getRecipeDetails(Long recipeId, Long currentUserId) {
+    @Override
+    public RecipeDetailPageDto getRecipeDetails(Long recipeId, Long userId) {
 
-        User user = userRepository.findById(currentUserId)
-                .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + currentUserId, HttpStatus.NOT_FOUND.value()));
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + userId, HttpStatus.NOT_FOUND.value()));
         Recipe recipe = recipeRepository.findById(recipeId)
                 .orElseThrow(() -> new ResourceNotFoundException("Recipe not found with id: " + recipeId, HttpStatus.NOT_FOUND.value()));
 
@@ -144,6 +126,18 @@ public class RecipeServiceImpl implements RecipeService {
         return recipeDto;
     }
 
+    @Override
+    public List<PageRecipeDto> getUserRecipes(Long currentUserId) {
+        List<Recipe> recipes = recipeRepository.findByUserId(currentUserId);
+        List<PageRecipeDto> recipeList = toListPageRecipeDto(recipes, currentUserId);
+
+        if (recipeList.isEmpty()) {
+            throw new ResourceNotFoundException("There is no recipes created by this user", HttpStatus.NOT_FOUND.value());
+        }
+        return recipeList;
+    }
+
+    @Override
     public List<RecipeSearchPageDto> searchRecipesByName(String name) {
         List<Recipe> recipes = recipeRepository.findByNameStartingWithIgnoreCase(name);
 
@@ -151,5 +145,28 @@ public class RecipeServiceImpl implements RecipeService {
             throw new ResourceNotFoundException("No recipes found with name '" + name + "'", HttpStatus.NOT_FOUND.value());
 
         return recipes.stream().map(RecipeMapper::toRecipeSearchPageDto).toList();
+    }
+
+    private List<PageRecipeDto> toListPageRecipeDto(List<Recipe> recipes, Long userId) {
+
+        List<PageRecipeDto> recipeList = new ArrayList<>();
+
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + userId, HttpStatus.NOT_FOUND.value()));
+
+        for (Recipe recipe : recipes) {
+            PageRecipeDto pageRecipeDto = PageRecipeDto.builder()
+                    .recipeId(recipe.getId())
+                    .recipeName(recipe.getName())
+                    .imageUrl(recipe.getImage().getUrl())
+                    .authorName(recipe.getUser().getUsername())
+                    .likeCount(likedRecipeRepository.countByRecipe(recipe))
+                    .saveCount(savedRecipeRepository.countByRecipe(recipe))
+                    .isLikedByCurrentUser(likedRecipeRepository.findByUserAndRecipe(user, recipe).isPresent())
+                    .isSavedByCurrentUser(savedRecipeRepository.findByUserAndRecipe(user, recipe).isPresent())
+                    .build();
+            recipeList.add(pageRecipeDto);
+        }
+        return recipeList;
     }
 }
