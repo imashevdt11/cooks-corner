@@ -96,9 +96,11 @@ public class RecipeServiceImpl implements RecipeService {
         Recipe recipe = findRecipeByName(recipeName);
 
         RecipeDetailPageDto recipeDto = RecipeDetailPageDto.builder()
+                .recipeId(recipe.getId())
                 .recipeName(recipe.getName())
                 .preparationTime(recipe.getPreparation_time())
                 .difficulty(recipe.getDifficulty())
+                .authorId(recipe.getUser().getId())
                 .authorName(recipe.getUser().getUsername())
                 .description(recipe.getDescription())
                 .imageUrl(recipe.getImage().getUrl())

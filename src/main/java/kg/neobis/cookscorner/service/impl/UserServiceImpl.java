@@ -26,7 +26,7 @@ public class UserServiceImpl implements UserService {
     public UserProfileDto getUserProfile(String username) {
 
         User user = userRepository.findUserByUsername(username)
-                .orElseThrow(() -> new ResourceNotFoundException("User not found with username: " + username, HttpStatus.NOT_FOUND.value()));
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with username: '" + username + "'", HttpStatus.NOT_FOUND.value()));
 
         UserProfileDto userProfile = new UserProfileDto();
         userProfile.setId(user.getId());
