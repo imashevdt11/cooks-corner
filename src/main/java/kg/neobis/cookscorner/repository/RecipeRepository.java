@@ -10,6 +10,8 @@ import java.util.List;
 @Repository
 public interface RecipeRepository extends JpaRepository<Recipe, Long> {
 
+    int countByUserId(Long userId);
+
     Boolean existsRecipeByName(String name);
 
     List<Recipe> findByCategory(Category category);

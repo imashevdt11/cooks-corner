@@ -23,5 +23,7 @@ public interface RecipeService {
 
     List<PageRecipeDto> getUserRecipes(Long userId);
 
+    List<PageRecipeDto> getSavedRecipes(Long userId);
+
     List<RecipeSearchPageDto> searchRecipesByName(String name);
 }
