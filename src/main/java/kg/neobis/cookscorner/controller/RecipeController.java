@@ -80,6 +80,13 @@ public class RecipeController {
         return ResponseEntity.ok(recipes);
     }
 
+    @Operation(summary = "getting recipes saved by user")
+    @GetMapping("/user-saved-recipes")
+    public ResponseEntity<?> getUserSavedRecipes(@RequestParam Long userId) {
+        List<PageRecipeDto> recipes = service.getSavedRecipes(userId);
+        return ResponseEntity.ok(recipes);
+    }
+
     @Operation(summary = "search recipes by name")
     @GetMapping("/search")
     public ResponseEntity<List<RecipeSearchPageDto>> searchRecipes(@RequestParam("name") String name) {

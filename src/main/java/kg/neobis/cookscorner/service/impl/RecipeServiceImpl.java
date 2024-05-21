@@ -1,10 +1,7 @@
 package kg.neobis.cookscorner.service.impl;
 
 import kg.neobis.cookscorner.dto.*;
-import kg.neobis.cookscorner.entity.Image;
-import kg.neobis.cookscorner.entity.Ingredient;
-import kg.neobis.cookscorner.entity.Recipe;
-import kg.neobis.cookscorner.entity.User;
+import kg.neobis.cookscorner.entity.*;
 import kg.neobis.cookscorner.enums.Category;
 import kg.neobis.cookscorner.enums.Difficulty;
 import kg.neobis.cookscorner.exception.ResourceAlreadyExistsException;
@@ -127,12 +124,25 @@ public class RecipeServiceImpl implements RecipeService {
     }
 
     @Override
-    public List<PageRecipeDto> getUserRecipes(Long currentUserId) {
-        List<Recipe> recipes = recipeRepository.findByUserId(currentUserId);
-        List<PageRecipeDto> recipeList = toListPageRecipeDto(recipes, currentUserId);
+    public List<PageRecipeDto> getUserRecipes(Long userId) {
+        List<Recipe> recipes = recipeRepository.findByUserId(userId);
+        List<PageRecipeDto> recipeList = toListPageRecipeDto(recipes, userId);
 
         if (recipeList.isEmpty()) {
             throw new ResourceNotFoundException("There is no recipes created by this user", HttpStatus.NOT_FOUND.value());
+        }
+        return recipeList;
+    }
+
+    public List<PageRecipeDto> getSavedRecipes(Long userId) {
+        List<SavedRecipe> savedRecipes = savedRecipeRepository.findByUserId(userId);
+        List<Recipe> recipes = savedRecipes.stream()
+                .map(SavedRecipe::getRecipe)
+                .collect(Collectors.toList());
+        List<PageRecipeDto> recipeList = toListPageRecipeDto(recipes, userId);
+
+        if (recipeList.isEmpty()) {
+            throw new ResourceNotFoundException("There are no saved recipes for this user", HttpStatus.NOT_FOUND.value());
         }
         return recipeList;
     }
