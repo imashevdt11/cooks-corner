@@ -41,22 +41,22 @@ public class RecipeServiceImpl implements RecipeService {
 
     @Override
     public RecipeDto createRecipe(MultipartFile file, String name, String description, Difficulty difficulty, Category category,
-                                  String preparation_time, Long userId, List<Ingredient> ingredients) throws IOException {
+                                  String preparation_time, String username, List<Ingredient> ingredients) throws IOException {
 
         if (recipeRepository.existsRecipeByName(name)) {
             throw new ResourceAlreadyExistsException("Recipe with name '" + name + "' is already exists!", HttpStatus.CONFLICT.value());
         }
 
-        User checkedUser = userRepository.findById(userId)
-                .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + userId, HttpStatus.NOT_FOUND.value()));
+        User user = userRepository.findUserByUsername(username)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with name: '" + username + "'", HttpStatus.NOT_FOUND.value()));
 
-        Recipe recipe = new Recipe();
-        recipe.setName(name);
-        recipe.setDescription(description);
-        recipe.setDifficulty(difficulty);
-        recipe.setCategory(category);
-        recipe.setPreparation_time(preparation_time);
-        recipe.setUser(checkedUser);
+        Recipe recipe = Recipe.builder()
+                .name(name)
+                .description(description)
+                .difficulty(difficulty)
+                .category(category)
+                .preparation_time(preparation_time)
+                .user(user).build();
 
         for (Ingredient ingredient : ingredients) {
             ingredient.setRecipe(recipe);
@@ -66,9 +66,9 @@ public class RecipeServiceImpl implements RecipeService {
         Image image;
         if (!file.isEmpty()) {
             String url = cloudinaryService.uploadFile(file, "images");
-            String fileName = UUID.randomUUID() + "_" + file.getOriginalFilename();
+
             image = new Image();
-            image.setName(fileName);
+            image.setName(UUID.randomUUID() + "_" + file.getOriginalFilename());
             image.setUrl(url);
             imageRepository.save(image);
             recipe.setImage(image);

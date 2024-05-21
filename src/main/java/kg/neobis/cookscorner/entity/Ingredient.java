@@ -46,11 +46,4 @@ public class Ingredient {
     @ManyToOne
     @JoinColumn(name = "recipe_id", nullable = false)
     Recipe recipe;
-
-    public Ingredient(Long id, String name, String amount, Unit unit) {
-        this.id = id;
-        this.name = name;
-        this.amount = amount;
-        this.unit = unit;
-    }
 }

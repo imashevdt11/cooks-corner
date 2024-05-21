@@ -15,7 +15,7 @@ import java.util.List;
 public interface RecipeService {
 
     RecipeDto createRecipe(MultipartFile file, String name, String description, Difficulty difficulty, Category category,
-                           String preparation_time, Long userId, List<Ingredient> ingredients) throws IOException;
+                           String preparation_time, String username, List<Ingredient> ingredients) throws IOException;
 
     List<PageRecipeDto> getRecipesByCategory(Category category, Long currentUserId);
 

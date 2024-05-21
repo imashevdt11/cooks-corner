@@ -40,7 +40,6 @@ public class RecipeController {
 
     RecipeService service;
 
-    @Operation(summary = "create recipe")
     @PostMapping("/create")
     public ResponseEntity<?> createRecipe(@RequestParam("file") MultipartFile file,
                                           @RequestParam("name") String name,
@@ -48,13 +47,13 @@ public class RecipeController {
                                           @RequestParam("difficulty") Difficulty difficulty,
                                           @RequestParam("category") Category category,
                                           @RequestParam("preparation_time") String preparation_time,
-                                          @RequestParam("userId") Long userId,
+                                          @RequestParam("username") String username,
                                           @RequestParam("ingredients") String ingredientsJson) {
         try {
             ObjectMapper objectMapper = new ObjectMapper();
             List<Ingredient> ingredients = objectMapper.readValue(ingredientsJson, new TypeReference<>() {
             });
-            RecipeDto createdRecipe = service.createRecipe(file, name, description, difficulty, category, preparation_time, userId, ingredients);
+            RecipeDto createdRecipe = service.createRecipe(file, name, description, difficulty, category, preparation_time, username, ingredients);
             return ResponseEntity.status(HttpStatus.CREATED).body(createdRecipe);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to create recipe: " + e.getMessage());
