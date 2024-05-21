@@ -1,5 +1,6 @@
 package kg.neobis.cookscorner.entity;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -36,4 +37,7 @@ public class LikedRecipe {
     @ManyToOne
     @JoinColumn(name = "recipe_id", nullable = false)
     Recipe recipe;
+
+    @Column(name = "is_liked", nullable = false)
+    Boolean isLiked = true;
 }

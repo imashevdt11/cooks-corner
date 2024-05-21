@@ -21,6 +21,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -178,5 +179,83 @@ public class RecipeServiceImpl implements RecipeService {
             recipeList.add(pageRecipeDto);
         }
         return recipeList;
+    }
+
+    // LIKE
+
+    @Override
+    public void likeRecipe(String username, String recipeName) {
+
+        User user = findUserByUsername(username);
+        Recipe recipe = findRecipeByName(recipeName);
+
+        Optional<LikedRecipe> likedRecipeOptional = likedRecipeRepository.findByUserAndRecipe(user, recipe);
+        LikedRecipe likedRecipe;
+        if (likedRecipeOptional.isPresent()) {
+            likedRecipe = likedRecipeOptional.get();
+            likedRecipe.setIsLiked(!likedRecipe.getIsLiked());
+        } else {
+            likedRecipe = LikedRecipe.builder()
+                    .user(user)
+                    .recipe(recipe)
+                    .isLiked(true)
+                    .build();
+        }
+        likedRecipeRepository.save(likedRecipe);
+    }
+
+    @Override
+    public boolean isRecipeLikedByUser(String username, String recipeName) {
+
+        User user = findUserByUsername(username);
+        Recipe recipe = findRecipeByName(recipeName);
+
+        return likedRecipeRepository.findByUserAndRecipe(user, recipe)
+                .orElseThrow(() -> new ResourceNotFoundException("Record not found for user and recipe", HttpStatus.NOT_FOUND.value()))
+                .getIsLiked();
+    }
+
+    // SAVE
+
+    @Override
+    public void saveRecipe(String username, String recipeName) {
+
+        User user = findUserByUsername(username);
+        Recipe recipe = findRecipeByName(recipeName);
+
+        Optional<SavedRecipe> savedRecipeOptional = savedRecipeRepository.findByUserAndRecipe(user, recipe);
+        SavedRecipe savedRecipe;
+        if (savedRecipeOptional.isPresent()) {
+            savedRecipe = savedRecipeOptional.get();
+            savedRecipe.setIsSaved(!savedRecipe.getIsSaved());
+        } else {
+            savedRecipe = SavedRecipe.builder()
+                    .user(user)
+                    .recipe(recipe)
+                    .isSaved(true)
+                    .build();
+        }
+        savedRecipeRepository.save(savedRecipe);
+    }
+
+    @Override
+    public boolean isRecipeSavedByUser(String username, String recipeName) {
+
+        User user = findUserByUsername(username);
+        Recipe recipe = findRecipeByName(recipeName);
+
+        return savedRecipeRepository.findByUserAndRecipe(user, recipe)
+                .orElseThrow(() -> new ResourceNotFoundException("Record not found for user and recipe", HttpStatus.NOT_FOUND.value()))
+                .getIsSaved();
+    }
+
+    private Recipe findRecipeByName(String recipeName) {
+        return recipeRepository.findRecipeByName(recipeName)
+                .orElseThrow(() -> new ResourceNotFoundException("Recipe not found with name: '" + recipeName + "'", HttpStatus.NOT_FOUND.value()));
+    }
+
+    private User findUserByUsername(String username) {
+        return userRepository.findUserByUsername(username)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with name: '" + username + "'", HttpStatus.NOT_FOUND.value()));
     }
 }

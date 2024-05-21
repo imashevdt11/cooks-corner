@@ -60,7 +60,8 @@ CREATE TABLE liked_recipes
 (
     id        BIGINT PRIMARY KEY DEFAULT NEXTVAL('liked_recipes_id_seq'),
     user_id   BIGINT NOT NULL REFERENCES users (id),
-    recipe_id BIGINT NOT NULL REFERENCES recipes (id)
+    recipe_id BIGINT NOT NULL REFERENCES recipes (id),
+    is_liked  BOOLEAN DEFAULT TRUE
 );
 
 CREATE SEQUENCE saved_recipe_id_seq;
@@ -68,5 +69,6 @@ CREATE TABLE saved_recipes
 (
     id        BIGINT PRIMARY KEY DEFAULT NEXTVAL('saved_recipe_id_seq'),
     user_id   BIGINT NOT NULL REFERENCES users (id),
-    recipe_id BIGINT NOT NULL REFERENCES recipes (id)
+    recipe_id BIGINT NOT NULL REFERENCES recipes (id),
+    is_saved  BOOLEAN DEFAULT TRUE
 );
