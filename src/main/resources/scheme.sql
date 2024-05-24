@@ -52,7 +52,8 @@ CREATE TABLE followings
 (
     id          BIGINT PRIMARY KEY DEFAULT NEXTVAL('following_id_seq'),
     follower_id BIGINT NOT NULL REFERENCES users (id),
-    chef_id     BIGINT NOT NULL REFERENCES users (id)
+    chef_id     BIGINT NOT NULL REFERENCES users (id),
+    is_followed BOOLEAN DEFAULT TRUE
 );
 
 CREATE SEQUENCE liked_recipes_id_seq;
