@@ -1,30 +1,37 @@
 package kg.neobis.cookscorner.service.impl;
 
+import kg.neobis.cookscorner.dto.UserDto;
 import kg.neobis.cookscorner.dto.UserProfileDto;
 import kg.neobis.cookscorner.dto.UserSearchPageDto;
-import kg.neobis.cookscorner.entity.Following;
-import kg.neobis.cookscorner.entity.User;
+import kg.neobis.cookscorner.entity.*;
 import kg.neobis.cookscorner.exception.ResourceNotFoundException;
 import kg.neobis.cookscorner.mapper.UserMapper;
 import kg.neobis.cookscorner.repository.FollowingRepository;
+import kg.neobis.cookscorner.repository.ImageRepository;
 import kg.neobis.cookscorner.repository.RecipeRepository;
 import kg.neobis.cookscorner.repository.UserRepository;
+import kg.neobis.cookscorner.service.CloudinaryService;
 import kg.neobis.cookscorner.service.UserService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class UserServiceImpl implements UserService {
 
+    CloudinaryService cloudinaryService;
     FollowingRepository followingRepository;
+    ImageRepository imageRepository;
     RecipeRepository recipeRepository;
     UserRepository userRepository;
 
@@ -58,6 +65,30 @@ public class UserServiceImpl implements UserService {
             throw new ResourceNotFoundException("No recipes found with name '" + username + "'", HttpStatus.NOT_FOUND.value());
 
         return users.stream().map(UserMapper::toUserSearchPageDto).toList();
+    }
+
+    @Override
+    public UserDto updateUserInfo(MultipartFile file, String username, String bio) throws IOException {
+
+        User user = findUserByUsername(username);
+
+        user.setUsername(username);
+        user.setBio(bio);
+
+        Image image;
+        if (!file.isEmpty()) {
+            String url = cloudinaryService.uploadFile(file, "images");
+
+            image = new Image();
+            image.setName(UUID.randomUUID() + "_" + file.getOriginalFilename());
+            image.setUrl(url);
+            imageRepository.save(image);
+            user.setImage(image);
+        }
+
+        User updateUser = userRepository.save(user);
+
+        return UserMapper.toUserDto(updateUser);
     }
 
     // FOLLOW

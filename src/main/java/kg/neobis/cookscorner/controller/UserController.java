@@ -3,6 +3,7 @@ package kg.neobis.cookscorner.controller;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import kg.neobis.cookscorner.common.EndpointConstants;
+import kg.neobis.cookscorner.dto.UserDto;
 import kg.neobis.cookscorner.dto.UserProfileDto;
 import kg.neobis.cookscorner.dto.UserSearchPageDto;
 import kg.neobis.cookscorner.exception.ResourceNotFoundException;
@@ -12,9 +13,12 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 
 @Validated
@@ -38,6 +42,18 @@ public class UserController {
     public ResponseEntity<List<UserSearchPageDto>> searchUsers(@RequestParam String username) {
         List<UserSearchPageDto> users = service.searchUsersByName(username);
         return ResponseEntity.ok(users);
+    }
+
+    @PutMapping("/update")
+    public ResponseEntity<Object> updateUserInfo(@RequestParam("file") MultipartFile file,
+                                                 @RequestParam("username") String username,
+                                                 @RequestParam("bio") String bio,
+                                                 BindingResult result) throws IOException {
+        if (result.hasErrors()) {
+            return ResponseEntity.badRequest().body("Validation error: " + result.getAllErrors());
+        }
+        UserDto user = service.updateUserInfo(file, username, bio);
+        return ResponseEntity.ok(user);
     }
 
     // FOLLOW
